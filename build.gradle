@@ -1,31 +1,28 @@
 plugins {
-	id 'fabric-loom' version '1.9-SNAPSHOT'
+    id 'fabric-loom' version '1.9-SNAPSHOT'
 }
 
 version = '1.0.0'
 group = 'net.bigbundlemixin'
 
 repositories {
-	maven { url 'https://maven.fabricmc.net/' }
+    maven { url 'https://maven.fabricmc.net/' }
 }
 
 dependencies {
-	minecraft 'com.mojang:minecraft:1.21.11'
-	mappings loom.officialMojangMappings()
-	modImplementation 'net.fabricmc:fabric-loader:0.18.4'
-	modImplementation "net.fabricmc.fabric-api:fabric-api:0.141.2+1.21.11"
-
-	// BigBundle as compileOnly so we can mixin into it
-	compileOnly files('libs/bigbundlemod-patched.jar')
+    minecraft 'com.mojang:minecraft:1.21.1'
+    mappings loom.officialMojangMappings()
+    modImplementation 'net.fabricmc:fabric-loader:0.16.9'
+    compileOnly files('libs/bigbundlemod-patched.jar')
 }
 
 loom {
-	mixin {
-		defaultRefmapName = 'bigbundle-mixin.refmap.json'
-	}
+    mixin {
+        defaultRefmapName = 'bigbundle-mixin.refmap.json'
+    }
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
