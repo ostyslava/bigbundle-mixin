@@ -1,10 +1,11 @@
 package net.bigbundlemixin.mixin;
 
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.bigbundlemod.block.BigBundleBlock;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.ItemContainerContents;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,24 +14,23 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
-@Mixin(targets = "net.bigbundlemod.block.BigBundleBlock", remap = false)
-public abstract class BigBundleCancelTextTooltipMixin extends Block {
+@Mixin(BlockItem.class)
+public class BigBundleCancelTextTooltipMixin {
 
-    protected BigBundleCancelTextTooltipMixin(BlockBehaviour.Properties properties) {
-        super(properties);
-    }
+    @Inject(method = "appendHoverText", at = @At("HEAD"), cancellable = true)
+    private void bundleTooltip(ItemStack stack, Item.TooltipContext context,
+                                List<Component> tooltip, TooltipFlag flag,
+                                CallbackInfo ci) {
+        if (!(((BlockItem)(Object)this).getBlock() instanceof BigBundleBlock)) return;
 
-    @Inject(method = "appendTooltip", at = @At("HEAD"), cancellable = true)
-    private void replaceTooltip(ItemStack stack, Object context,
-                                 List<Component> tooltip, Object flag,
-                                 CallbackInfo ci) {
         ItemContainerContents container = stack.get(DataComponents.CONTAINER);
-        if (container != null) {
-            container.nonEmptyItems().forEach(s -> {
-                String line = (s.getCount() > 1 ? s.getCount() + "x " : "") + s.getHoverName().getString();
-                tooltip.add(Component.literal(line));
-            });
-        }
+        if (container == null) { ci.cancel(); return; }
+
+        container.nonEmptyItems().forEach(s -> {
+            String line = (s.getCount() > 1 ? s.getCount() + "x " : "")
+                        + s.getHoverName().getString();
+            tooltip.add(Component.literal("§7" + line));
+        });
         ci.cancel();
     }
 }
